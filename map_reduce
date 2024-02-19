@@ -1,0 +1,31 @@
+Map Reduce
+//reduce for particular ids
+{
+  name: 1,
+  sumofscores: {
+    $reduce: {
+      input: "$scores",
+      initialValue: 0,
+      in: {
+        $add: ["$$value", "$$this.score"],
+      },
+    },
+  },
+}
+
+
+//reduce combine of all ids
+{
+  _id: null,
+  total: {
+    $sum: {
+      $reduce: {
+        input: "$scores",
+        initialValue: 0,
+        in: {
+          $add: ["$$value", "$$this.score"],
+        },
+      },
+    },
+  },
+}
