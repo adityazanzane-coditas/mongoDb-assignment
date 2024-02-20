@@ -1,0 +1,69 @@
+//filter on quiz and homework of student data
+Code:-
+[
+  {
+    $project: {
+      name: 1,
+      scores: {
+        $filter: {
+          input: "$scores",
+          as: "score",
+          cond: {
+            $not: {
+              $in: [
+                "$$score.type",
+                ["quiz", "homework"],
+              ],
+            },
+          },
+        },
+      },
+    },
+  },
+]
+
+Output:-
+PIPELINE OUTPUT
+Sample of 10 documents
+
+
+OUTPUT OPTIONS
+_id
+0
+name
+"aimee Zank"
+
+scores
+Array (1)
+_id
+1
+name
+"Aurelia Menendez"
+
+scores
+Array (1)
+_id
+2
+name
+"Corliss Zuk"
+
+scores
+Array (1)
+_id
+3
+name
+"Bao Ziglar"
+
+scores
+Array (1)
+_id
+4
+name
+"Zachary Langlais"
+
+scores
+Array (1)
+_id
+5
+name
+"Wilburn Spiess"
