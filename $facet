@@ -1,0 +1,32 @@
+//$facet with unwind and sortByCount
+Code:-
+[
+  {
+    $facet: {
+      "categorizedByScores": [
+        { $unwind: "$scores" },
+        { $sortByCount: "$scores" }
+      ],
+      "categorizedByType": [
+        { $sortByCount: "$scores.type" }
+      ],
+    }
+  }
+]
+
+Output:-
+
+
+categorizedByScores
+Array (600)
+
+categorizedByType
+Array (1)
+
+0
+Object
+
+_id
+Array (3)
+count
+200
