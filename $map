@@ -1,0 +1,63 @@
+//map using truncate
+Code:-
+[
+  {
+    $project: {
+      scores: {
+        $map: {
+          input: "$scores",
+          as: "score",
+          in: {
+            score: {
+              $trunc: "$$score.score",
+            },
+            type: "$$score.type",
+          },
+        },
+      },
+    },
+  },
+]
+
+Output:-
+PIPELINE OUTPUT
+Sample of 10 documents
+
+
+OUTPUT OPTIONS
+_id
+0
+
+scores
+Array (3)
+_id
+1
+
+scores
+Array (3)
+_id
+2
+
+scores
+Array (3)
+_id
+3
+
+scores
+Array (3)
+_id
+4
+
+scores
+Array (3)
+_id
+5
+
+scores
+Array (3)
+_id
+6
+
+scores
+Array (3)
+_id
