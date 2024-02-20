@@ -1,0 +1,76 @@
+//lookup using pipeline on student and employee data
+Code:-
+[
+  {
+    $lookup: {
+      from: "students",
+      let: {
+        name: "$name",
+      },
+      pipeline: [
+        {
+          $match: {
+            $expr: {
+              $eq: ["$employeeName", "$$name"],
+            },
+          },
+        },
+      ],
+      as: "result",
+    },
+  },
+]
+
+Output:-
+PIPELINE OUTPUT
+Sample of 10 documents
+
+
+OUTPUT OPTIONS
+_id
+0
+name
+"aimee Zank"
+
+scores
+Array (3)
+
+result
+Array (empty)
+_id
+1
+name
+"Aurelia Menendez"
+
+scores
+Array (3)
+
+result
+Array (empty)
+_id
+2
+name
+"Corliss Zuk"
+
+scores
+Array (3)
+
+result
+Array (empty)
+_id
+3
+name
+"Bao Ziglar"
+
+scores
+Array (3)
+
+result
+Array (empty)
+_id
+4
+name
+"Zachary Langlais"
+
+scores
+Array (3)
