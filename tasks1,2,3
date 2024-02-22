@@ -1,0 +1,246 @@
+Assignment: MongoDB CRUD Operations and Aggregation
+Task 1: CRUD Operations
+Create Database and Collections:
+Create a new MongoDB database named company.
+Within the company database, create three collections: employees, financial_details, and projects.
+
+Query:-
+use company
+switched to db company
+db.createCollection("employees")
+db.createCollection("financial_details")
+db.createCollection("projects")
+
+Insert Data:
+Insert at least 5 documents into the employees collection, financial_details collection, and projects collection. Each collection should represent employees, financial details, and projects respectively.
+employees documents should include fields such as name, age, position, and other employee-related details.
+financial_details documents should include fields such as employee_id (reference to an employee), salary, annual_income, and expenses.
+projects documents should include fields such as project_name, employee_id (referring to an employee), and status.
+
+Query:-
+db.employees.insertMany([
+  { name: "Aditya Jha", age: 25, position: "Developer" },
+  { name: "Rahul Porwal", age: 28, position: "Manager" },
+  { name: "Sneha Shinde", age: 40, position: "Senior Engineer" },
+  { name: "Richa Rai", age: 32, position: "Project Manager" },
+  { name: "Anurag Jason", age: 29, position: "Tester" }
+])
+
+db.financial_details.insertMany([
+  { employee_id: 1001, salary: 60000, annual_income: 72000, expenses: 10000 },
+  { employee_id: 1002, salary: 50000, annual_income: 60000, expenses: 8000 },
+  { employee_id: 1003, salary: 80000, annual_income: 96000, expenses: 12000 },
+  { employee_id: 1004, salary: 70000, annual_income: 84000, expenses: 11000 },
+  { employee_id: 1005, salary: 45000, annual_income: 54000, expenses: 7000 }
+])
+
+db.projects.insertMany([
+  { project_name: "Healthcare", employee_id: 1001, status: "In Progress" },
+  { project_name: "Gen Ai", employee_id: 1002, status: "Completed" },
+  { project_name: "Networking", employee_id: 1003, status: "In Progress" },
+  { project_name: "Car Safety", employee_id: 1004, status: "Pending" },
+  { project_name: "UPI", employee_id: 1005, status: "Completed" }
+])
+Output:- 
+{
+  acknowledged: true,
+  insertedIds: {
+    '0': ObjectId('65d6a88f43ac833ebfca6386'),
+    '1': ObjectId('65d6a88f43ac833ebfca6387'),
+    '2': ObjectId('65d6a88f43ac833ebfca6388'),
+    '3': ObjectId('65d6a88f43ac833ebfca6389'),
+    '4': ObjectId('65d6a88f43ac833ebfca638a')
+  }
+}
+
+Read Operation:
+Write a query to retrieve all employees who are above 30 years old from the employees collection.
+
+Query:-
+db.employees.find({ age: { $gt: 30 } })
+
+Output:-
+{
+  _id: ObjectId('65d6a88f43ac833ebfca637e'),
+  name: 'Sneha Shinde',
+  age: 40,
+  position: 'Senior Engineer'
+}
+{
+  _id: ObjectId('65d6a88f43ac833ebfca637f'),
+  name: 'Richa Rai',
+  age: 32,
+  position: 'Project Manager'
+}
+
+Update Operation:
+Choose an employee and update their position to a higher role in the employees collection.
+
+Query:-
+db.employees.updateOne(
+  { name: "Aditya Jha" },
+  { $set: { position: "Senior Developer" } }
+)
+
+Output:-
+{
+  acknowledged: true,
+  insertedId: null,
+  matchedCount: 1,
+  modifiedCount: 1,
+  upsertedCount: 0
+}
+
+Delete Operation:
+Delete a project from the projects collection based on the project name.
+
+Query:-
+db.projects.deleteOne({ project_name: "Networking" })
+
+Output:-
+{
+  acknowledged: true,
+  deletedCount: 1
+}
+
+Task 2: Aggregation
+Aggregation Pipeline:
+Create an aggregation pipeline that calculates the average salary for employees in each position from the financial_details collection.
+
+Query:-
+db.financial_details.aggregate([
+  { $group: { _id: "$position", avgSalary: { $avg: "$salary" } } }
+])
+
+Output:-
+{
+  _id: null,
+  avgSalary: 61000
+}
+
+Group and Count:
+Write an aggregation query to group financial details by the employee's age from the financial_details collection and count the number of employees in each age group.
+
+Query:-
+db.financial_details.aggregate([{ $group: { _id: "$age", count: { $sum: 1 } } }])
+
+Output:-
+{
+  _id: null,
+  count: 5
+}
+
+Sorting:
+Sort the projects based on their status in descending order from the projects collection.
+
+Query:-
+db.projects.find().sort({ status: -1 })
+
+Output:-
+{
+  _id: ObjectId('65d6a88f43ac833ebfca6389'),
+  project_name: 'Car Safety',
+  employee_id: 1004,
+  status: 'Pending'
+}
+{
+  _id: ObjectId('65d6a88f43ac833ebfca6386'),
+  project_name: 'Healthcare',
+  employee_id: 1001,
+  status: 'In Progress'
+}
+{
+  _id: ObjectId('65d6a88f43ac833ebfca6387'),
+  project_name: 'Gen Ai',
+  employee_id: 1002,
+  status: 'Completed'
+}
+{
+  _id: ObjectId('65d6a88f43ac833ebfca638a'),
+  project_name: 'UPI',
+  employee_id: 1005,
+  status: 'Completed'
+}
+
+Projecting Fields:
+Create an aggregation query to project only the name and position fields for employees who have an annual income greater than a specified value from the employees and financial_details collections.
+
+Query:-
+db.employees.aggregate([
+  {
+    $lookup: {
+      from: "financial_details",
+      localField: "_id",
+      foreignField: "employee_id",
+      as: "financial_details"
+    }
+  },
+  { $unwind: "$financial_details" },
+  { $match: { "financial_details.annual_income": { $gt: 70000 } } },
+  { $project: { name: 1, position: 1, _id: 0 } }
+])
+
+Task 3: Advance Aggregation (Use all below operation in single query)
+Lookup and Project:
+Use $lookup to join the employees collection with the projects collection based on the employee_id. Project only the relevant fields from the projects collection.
+Group and Sum:
+Group the result from Task 1 by position and calculate the total number of projects each position is involved in using $group and $sum. Project the position and total projects.
+AddFields and Map:
+Use $addFields to create a new field named project_names in the result from Task 2. This field should be an array containing the names of all projects for each position. You can use $map to iterate over the projects and extract their names.
+Reduce Operation:
+Implement a $reduce operation to calculate the total annual income of all employees across positions from the financial_details collection. Project the result.
+Filter and Project:
+Create a query to filter out employees with annual expenses greater than a specified value from the financial_details collection. Project only the necessary fields.
+
+Query:-
+db.employees.aggregate([
+  {
+    $lookup: {
+      from: "projects",
+      localField: "employee_id",
+      foreignField: "employee_id",
+      as: "projects"
+    }
+  },
+  {
+    $group: {
+      _id: "$position",
+      employees: { $push: "$$ROOT" }, 
+      totalProjects: { $sum: { $size: "$projects" } },
+      projectNames: { $first: "$projects.project_name" }
+    }
+  },
+  {
+    $lookup: {
+      from: "financial_details",
+      pipeline: [
+        {
+          $group: {
+            _id: null,
+            totalIncome: { $sum: "$annual_income" },
+            highExpensesDetails: {
+              $push: {
+                $cond: [
+                  { $gt: ["$expenses", 10000] },
+                  { employee_id: "$employee_id", expenses: "$expenses" },
+                  "$$REMOVE"
+                ]
+              }
+            }
+          }
+        }
+      ],
+      as: "financialSummary"
+    }
+  },
+  {
+    $project: {
+      _id: 0,
+      position: "$_id",
+      totalProjects: 1,
+      projectNames: 1,
+      totalIncome: { $arrayElemAt: ["$financialSummary.totalIncome", 0] },
+      highExpensesDetails: { $arrayElemAt: ["$financialSummary.highExpensesDetails", 0] }
+    }
+  }
+]);
